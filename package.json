@@ -12,6 +12,7 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "migrate:create": "cross-env BUCKET_NAME=schema BUCKET_ENDPOINT=http://localhost NODE_OPTIONS=--no-deprecation payload migrate:create",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint ."
   },
   "dependencies": {

@@ -38,11 +38,11 @@ npm run dev                 # http://localhost:3000, panel: /admin
 Pierwsze wejście na `/admin` poprosi o utworzenie konta administratora.
 Bez `BUCKET_NAME` zdjęcia zapisują się lokalnie w `./media` (nie trafiają do gita).
 
-Po zmianie modeli danych:
+Po zmianie modeli danych (migracje twórz **zawsze** przez `npm run migrate:create`, które uwzględnia schemat z bucketem S3 — inaczej w bazie na Railway zabraknie kolumn):
 
 ```bash
 npm run generate:types                  # odświeża src/payload-types.ts
-npx payload migrate:create nazwa_zmiany # tworzy migrację — dołącz ją do commita
+npm run migrate:create nazwa_zmiany     # tworzy migrację — dołącz ją do commita
 ```
 
 ## Wdrożenie na Railway

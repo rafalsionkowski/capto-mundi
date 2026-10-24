@@ -1,5 +1,6 @@
 import * as migration_20261024_110920_initial from './20261024_110920_initial';
 import * as migration_20261024_122436_hero_photos from './20261024_122436_hero_photos';
+import * as migration_20261024_131213_add_object_key from './20261024_131213_add_object_key';
 
 export const migrations = [
   {
@@ -10,6 +11,11 @@ export const migrations = [
   {
     up: migration_20261024_122436_hero_photos.up,
     down: migration_20261024_122436_hero_photos.down,
-    name: '20261024_122436_hero_photos'
+    name: '20261024_122436_hero_photos',
+  },
+  {
+    up: migration_20261024_131213_add_object_key.up,
+    down: migration_20261024_131213_add_object_key.down,
+    name: '20261024_131213_add_object_key'
   },
 ];
