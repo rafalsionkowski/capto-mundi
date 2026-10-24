@@ -36,6 +36,13 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
+  onInit: async (payload) => {
+    payload.logger.info(
+      process.env.BUCKET_NAME
+        ? `Photo storage: S3 bucket "${process.env.BUCKET_NAME}" (endpoint ${process.env.BUCKET_ENDPOINT || 'not set'})`
+        : 'Photo storage: LOCAL DISK. BUCKET_NAME is not set, so uploads will fail or be lost on Railway.',
+    )
+  },
   upload: {
     // Reject oversized files early with a clear message instead of failing mid-processing.
     limits: { fileSize: 40 * 1024 * 1024 },
