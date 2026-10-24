@@ -179,7 +179,6 @@ export interface Media {
    * Optional photo credit.
    */
   credit?: string | null;
-  _objectKey?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -535,7 +534,6 @@ export interface ArticlesSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
-  _objectKey?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -654,7 +652,7 @@ export interface SiteSetting {
   heroTitle?: string | null;
   heroText?: string | null;
   /**
-   * The four photos next to the headline on the home page. Order: 1 = tall portrait (left), 2 and 3 = small squares (top right), 4 = wide panorama (bottom). Empty slots fall back to album covers.
+   * Order: 1 = tall portrait (left), 2 and 3 = small squares (top right), 4 = wide panorama (bottom). Empty slots fall back to album covers.
    */
   heroPhotos?:
     | {
@@ -662,6 +660,18 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Up to 6 albums, shown in this order with their cover photos. Leave empty to show the newest albums. Only published albums are visible to visitors.
+   */
+  featuredAlbums?: (number | Trip)[] | null;
+  /**
+   * Shown large, with its hero image. Leave empty to use the article marked as Featured (or the newest one).
+   */
+  featuredArticle?: (number | null) | Article;
+  /**
+   * Shown as a list next to the large article, with their hero images. Leave empty to show the newest ones.
+   */
+  moreArticles?: (number | Article)[] | null;
   /**
    * Shown in the About section of the home page.
    */
@@ -687,6 +697,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  featuredAlbums?: T;
+  featuredArticle?: T;
+  moreArticles?: T;
   about?: T;
   email?: T;
   instagram?: T;

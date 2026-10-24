@@ -4,24 +4,36 @@ import { Empty, SiteFooter, SiteHeader } from '@/components/Chrome'
 import { Photo } from '@/components/Photo'
 import { getClient } from '@/lib/payload'
 import { categoryLabel, readTime } from '@/lib/format'
+import type { Article, Trip } from '@/payload-types'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
   const payload = await getClient()
 
-  const [settings, trips, featuredRes, latestRes] = await Promise.all([
-    payload.findGlobal({ slug: 'site-settings' }),
+  const [settings, newestTrips, featuredRes, latestRes] = await Promise.all([
+    payload.findGlobal({ slug: 'site-settings', depth: 2 }),
     payload.find({ collection: 'trips', limit: 6, sort: '-year', depth: 1 }),
     payload.find({ collection: 'articles', where: { featured: { equals: true } }, limit: 1, sort: '-publishedAt', depth: 1 }),
     payload.find({ collection: 'articles', limit: 5, sort: '-publishedAt', depth: 1 }),
   ])
 
-  const featured = featuredRes.docs[0] ?? latestRes.docs[0]
-  const others = latestRes.docs.filter((a) => a.id !== featured?.id).slice(0, 3)
-  // Photos picked in Site settings win; empty slots fall back to album covers.
+  // Relationships that point at drafts (or deleted items) come back as plain ids: skip those.
+  const populated = <T extends object>(items: (T | number | null | undefined)[] | null | undefined): T[] =>
+    (items ?? []).filter((x): x is T => Boolean(x) && typeof x === 'object')
+
+  // What the editor picked in Site settings wins; anything left empty is filled automatically.
+  const pickedAlbums = populated<Trip>(settings.featuredAlbums).slice(0, 6)
+  const albums = pickedAlbums.length ? pickedAlbums : newestTrips.docs
+
+  const pickedFeatured = typeof settings.featuredArticle === 'object' ? settings.featuredArticle : null
+  const featured = pickedFeatured ?? featuredRes.docs[0] ?? latestRes.docs[0]
+
+  const pickedMore = populated<Article>(settings.moreArticles).filter((a) => a.id !== featured?.id).slice(0, 3)
+  const others = pickedMore.length ? pickedMore : latestRes.docs.filter((a) => a.id !== featured?.id).slice(0, 3)
+
   const chosen = (settings.heroPhotos ?? []).map((p) => p.image)
-  const covers = trips.docs.map((t) => t.cover)
+  const covers = albums.map((t) => t.cover)
   const collage = [0, 1, 2, 3].map((i) => chosen[i] ?? covers[i])
 
   return (
@@ -51,13 +63,13 @@ export default async function HomePage() {
           <h2 className="h2">Travel albums</h2>
           <Link href="/albums" className="link">All albums →</Link>
         </div>
-        {trips.docs.length === 0 ? (
+        {albums.length === 0 ? (
           <Empty>
             No albums yet. <Link href="/admin/collections/trips/create">Add the first one in the admin panel</Link>.
           </Empty>
         ) : (
           <div className="grid-3">
-            {trips.docs.map((t) => (
+            {albums.map((t) => (
               <Link key={t.id} href={`/albums/${t.slug}`} className="card">
                 <Photo media={t.cover} label="Album cover" className="r43" sizes="(max-width: 700px) 100vw, 33vw" />
                 <div className="stack gap-6">
