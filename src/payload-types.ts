@@ -652,6 +652,15 @@ export interface SiteSetting {
   heroTitle?: string | null;
   heroText?: string | null;
   /**
+   * The four photos next to the headline on the home page. Order: 1 = tall portrait (left), 2 and 3 = small squares (top right), 4 = wide panorama (bottom). Empty slots fall back to album covers.
+   */
+  heroPhotos?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Shown in the About section of the home page.
    */
   about?: string | null;
@@ -670,6 +679,12 @@ export interface SiteSetting {
 export interface SiteSettingsSelect<T extends boolean = true> {
   heroTitle?: T;
   heroText?: T;
+  heroPhotos?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
   about?: T;
   email?: T;
   instagram?: T;

@@ -19,7 +19,10 @@ export default async function HomePage() {
 
   const featured = featuredRes.docs[0] ?? latestRes.docs[0]
   const others = latestRes.docs.filter((a) => a.id !== featured?.id).slice(0, 3)
+  // Photos picked in Site settings win; empty slots fall back to album covers.
+  const chosen = (settings.heroPhotos ?? []).map((p) => p.image)
   const covers = trips.docs.map((t) => t.cover)
+  const collage = [0, 1, 2, 3].map((i) => chosen[i] ?? covers[i])
 
   return (
     <>
@@ -35,11 +38,11 @@ export default async function HomePage() {
             <Link href="/articles" className="link-plain">Read the articles</Link>
           </div>
         </div>
-        <div className="hero-collage" aria-hidden={covers.length === 0}>
-          <Photo media={covers[0]} label="Portrait photo" sizes="(max-width: 700px) 50vw, 25vw" eager />
-          <Photo media={covers[1]} label="Photo" sizes="(max-width: 700px) 50vw, 25vw" eager />
-          <Photo media={covers[2]} label="Photo" sizes="(max-width: 700px) 50vw, 25vw" eager />
-          <Photo media={covers[3]} label="Panoramic photo" sizes="(max-width: 700px) 100vw, 50vw" eager />
+        <div className="hero-collage" aria-hidden={collage.every((m) => !m)}>
+          <Photo media={collage[0]} label="Portrait photo" sizes="(max-width: 700px) 50vw, 25vw" eager />
+          <Photo media={collage[1]} label="Photo" sizes="(max-width: 700px) 50vw, 25vw" eager />
+          <Photo media={collage[2]} label="Photo" sizes="(max-width: 700px) 50vw, 25vw" eager />
+          <Photo media={collage[3]} label="Panoramic photo" sizes="(max-width: 700px) 100vw, 50vw" eager />
         </div>
       </section>
 
