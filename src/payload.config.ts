@@ -12,6 +12,10 @@ import { Trips } from './collections/Trips'
 import { Users } from './collections/Users'
 import { SiteSettings } from './globals/SiteSettings'
 
+// Keep memory use low on small hosts: one image operation at a time, no libvips cache.
+sharp.concurrency(1)
+sharp.cache(false)
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -32,6 +36,12 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
+  upload: {
+    // Reject oversized files early with a clear message instead of failing mid-processing.
+    limits: { fileSize: 40 * 1024 * 1024 },
+    abortOnLimit: true,
+    responseOnLimit: 'File too large (max 40 MB). Export a smaller JPEG (about 3000 px on the long side) and try again.',
+  },
   plugins: [
     // Photos go to an S3-compatible bucket (Railway Storage Bucket). Without BUCKET_NAME
     // (local development) files are stored on the local disk instead.

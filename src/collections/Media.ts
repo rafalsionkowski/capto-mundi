@@ -21,7 +21,10 @@ export const Media: CollectionConfig = {
     { name: 'credit', type: 'text', admin: { description: 'Optional photo credit.' } },
   ],
   upload: {
-    mimeTypes: ['image/*'],
+    // HEIC (iPhone) is not supported by the image processor, so only web formats are accepted.
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    // Store the original at web size: large camera files are scaled down on upload.
+    resizeOptions: { width: 3200, height: 3200, fit: 'inside', withoutEnlargement: true },
     focalPoint: true,
     adminThumbnail: 'thumb',
     imageSizes: [
